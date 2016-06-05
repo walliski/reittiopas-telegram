@@ -14,8 +14,29 @@ bot.onText(/^\/stop (.+)$/, function (msg, match) {
         json: true
     }, function (error, response, body) {
         if (body != null) {
-            var text = body[0].code_short + ": " + body[0].name_fi + " - " + body[0].name_sv;
-            bot.sendMessage(msg.chat.id, text).then(function () {
+            var text = body[0].code_short + ": *" + body[0].name_fi + " - " + body[0].name_sv + "*";
+            if (body[0].departures != null) {
+                for (var i = 0; i < body[0].departures.length; i++) {
+                    // parse departure time
+                    var rawTime = "" + body[0].departures[i].time;
+                    var time = "";
+                    if (parseInt(rawTime.charAt(0)) < 2 || parseInt(rawTime.charAt(1)) < 4) {
+                        if (parseInt(rawTime.charAt(0)) !== 0)
+                            time += rawTime.charAt(0);
+                        time += rawTime.charAt(1);
+                    } else {
+                        time += (parseInt(rawTime.charAt(1)) - 4);
+                    }
+                    time += ":";
+                    time += rawTime.charAt(2);
+                    time += rawTime.charAt(3);
+
+                    text += "\n" + time + " " + body[0].departures[i].code;
+                }
+            } else {
+                text += "\nNo more departures today!";
+            }
+            bot.sendMessage(msg.chat.id, text, {parse_mode: "Markdown"}).then(function () {
                 // done
             });
         } else {
