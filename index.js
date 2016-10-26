@@ -1,7 +1,7 @@
 var telegramBot = require('node-telegram-bot-api');
 var request = require('request');
 
-var settings = require('./settings.js');
+var settings = require('./settings.json');
 
 var bot = new telegramBot(settings.tgToken, {polling: true});
 
